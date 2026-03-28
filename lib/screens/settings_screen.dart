@@ -42,20 +42,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _saveSettings() async {
+    // طلب الإذن أولاً - مهم جداً على iOS
+    final notifService = NotificationService();
+    final granted = await notifService.requestPermissions();
+
+    if (!granted && mounted) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: const Color(0xFF1C2E1C),
+          title: const Text(
+            'تفعيل الإشعارات',
+            style: TextStyle(
+                color: Color(0xFFE8C97A), fontFamily: 'Amiri', fontSize: 20),
+          ),
+          content: const Text(
+            'يرجى تفعيل الإشعارات من:\nإعدادات iPhone ← أذكاري ← Notifications ← Allow Notifications',
+            style: TextStyle(color: Color(0xFFA09070)),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('حسناً',
+                  style: TextStyle(color: Color(0xFFC9A84C))),
+            ),
+          ],
+        ),
+      );
+    }
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
       'reminder_settings',
       jsonEncode(_settings.toJson()),
     );
 
-    // Re-schedule notifications
     final prayerService = PrayerService();
     await prayerService.loadSavedLocation();
     if (!prayerService.hasLocation) prayerService.setDefaultEgyptLocation();
 
     final prayers = prayerService.calculatePrayerTimes();
     if (prayers != null) {
-      await NotificationService().scheduleAllReminders(
+      await notifService.scheduleAllReminders(
         settings: _settings,
         prayers: prayers,
       );
@@ -374,7 +402,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     const Spacer(),
                     Text(
-                      time.format(context),
+                      time.formatted,
                       style: const TextStyle(
                         color: AppTheme.goldLight,
                         fontSize: 18,
