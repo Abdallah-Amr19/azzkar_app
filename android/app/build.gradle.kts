@@ -6,11 +6,10 @@ plugins {
 
 android {
     namespace "com.example.azkar_app"
-    compileSdk flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
+    compileSdk 34
+    ndkVersion "27.0.12077973"
 
     compileOptions {
-        // ✅ Fix: Enable core library desugaring
         coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -22,10 +21,10 @@ android {
 
     defaultConfig {
         applicationId "com.example.azkar_app"
-        minSdkVersion 21
-        targetSdkVersion flutter.targetSdkVersion
-        versionCode flutter.versionCode
-        versionName flutter.versionName
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
         multiDexEnabled true
     }
 
@@ -43,7 +42,6 @@ flutter {
 }
 
 dependencies {
-    // ✅ Fix: Required for core library desugaring
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10"
 }
